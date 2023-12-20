@@ -43,11 +43,10 @@ async def get_likes_list_for_film(film_id: str,
              summary='Добавление лайка фильму')
 async def add_like_film(like_data: LikeUgcModel,
                         like_service: LikeService = Depends(get_like_service)):
-    like = await like_service.insert_one(like_data.dict())
-
-    if like:
-        logger.info(f"Like to film {like_data.film_id} created")
-        return Response(content=like, status_code=status.HTTP_201_CREATED)
+    result = await like_service.upsert_one(like_data.dict())
+    if result.matched_count > 0 or result.upserted_id:
+        logger.info(f"Like for film {like_data.film_id} created or updated")
+        return Response(status_code=status.HTTP_201_CREATED)
 
     logger.info(f"Like to film {like_data.film_id} not created")
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='like not created')

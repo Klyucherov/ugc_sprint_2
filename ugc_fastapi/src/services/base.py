@@ -17,6 +17,11 @@ class BaseService:
         inserted_doc = self._transform_dict(inserted_doc)
         return inserted_doc
 
+    async def upsert_one(self, data: dict):
+        filter = {'user_id': data['user_id'], 'film_id': data['film_id']}
+        update = {'$set': data}
+        return await self.collection.update_one(filter, update, upsert=True)
+
     async def find(self, filter_: dict, page_number: int, page_size: int):
         skip = self._create_skip(page_number, page_size)
         cursor = self.collection.find(filter_).skip(skip).limit(page_size)

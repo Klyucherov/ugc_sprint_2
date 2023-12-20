@@ -13,4 +13,3 @@ def test_get_film_reviews(film_ids):
     response = get(url=url, json={})
 
     assert response.status_code == HTTPStatus.OK
-    print(response.json())
